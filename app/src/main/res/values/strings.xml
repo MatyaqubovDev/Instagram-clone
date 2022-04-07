@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Instagram Clone</string>
+    <string name="str_instagram">Instagram</string>
+    <string name="str_fullname">Fullname</string>
+    <string name="str_email">Email</string>
+    <string name="str_password">Password</string>
+    <string name="str_cpassword">Confirm Password</string>
+    <string name="str_signin">Sign In</string>
+    <string name="str_signup">Sign Up</string>
+    <string name="str_already_account">Already have an account?</string>
+    <string name="str_donot_account">Don`t have an account?</string>
+    <string name="str_home">Home</string>
+    <string name="str_search">Search</string>
+    <string name="str_upload">Upload</string>
+    <string name="str_favourite">Favorite</string>
+    <string name="str_profile">Profile</string>
+    <string name="str_write_caption">Write a caption</string>
+    <string name="str_follow">Follow</string>
+    <string name="str_following">Following</string>
+    <string name="str_followers">Followers</string>
+    <string name="str_post">Posts</string>
+</resources>
