@@ -35,6 +35,7 @@ class SignInActivity : BaseActivity() {
         startActivity(intent)
     }
 
+
      fun callMainActivity() {
         val intent = Intent(this,MainActivity::class.java)
         startActivity(intent)
