@@ -17,6 +17,7 @@ class HomeAdapter(var fragment:HomeFragment,var items:ArrayList<Post>):BaseAdapt
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view=LayoutInflater.from(parent.context).inflate(R.layout.item_post_home,parent,false)
+
         return PostViewHolder(view)
     }
 
