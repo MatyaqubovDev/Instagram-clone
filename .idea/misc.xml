@@ -7,7 +7,11 @@
         <entry key="app/src/main/res/drawable/app_main_gradient.xml" value="0.2203125" />
         <entry key="app/src/main/res/drawable/bottom_color_selector.xml" value="0.2203125" />
         <entry key="app/src/main/res/drawable/ic_camera.xml" value="0.2203125" />
+        <entry key="app/src/main/res/drawable/ic_favorite.xml" value="0.15925925925925927" />
+        <entry key="app/src/main/res/drawable/ic_liked.xml" value="0.15925925925925927" />
         <entry key="app/src/main/res/drawable/ic_logout.xml" value="0.1125" />
+        <entry key="app/src/main/res/drawable/ic_more.xml" value="0.15925925925925927" />
+        <entry key="app/src/main/res/drawable/ic_share.xml" value="0.15925925925925927" />
         <entry key="app/src/main/res/drawable/ic_upload.xml" value="0.1125" />
         <entry key="app/src/main/res/drawable/shape_circle_orange_light.xml" value="0.2203125" />
         <entry key="app/src/main/res/drawable/view_rounded_corner.xml" value="0.2203125" />
@@ -21,6 +25,8 @@
         <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.20416666666666666" />
         <entry key="app/src/main/res/layout/fragment_search.xml" value="0.20416666666666666" />
         <entry key="app/src/main/res/layout/fragment_upload.xml" value="0.1925925925925926" />
+        <entry key="app/src/main/res/layout/item_favorite.xml" value="0.11851851851851852" />
+        <entry key="app/src/main/res/layout/item_post_home.xml" value="0.11851851851851852" />
         <entry key="app/src/main/res/menu/navigation.xml" value="0.20416666666666666" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.2074074074074074" />
       </map>

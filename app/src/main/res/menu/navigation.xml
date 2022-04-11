@@ -18,7 +18,7 @@
         android:title="@string/str_upload" />
     <item
         android:id="@+id/navigation_favourite"
-        android:icon="@drawable/ic_favorite"
+        android:icon="@drawable/ic_unliked"
         android:menuCategory="secondary"
         android:title="@string/str_favourite" />
 
