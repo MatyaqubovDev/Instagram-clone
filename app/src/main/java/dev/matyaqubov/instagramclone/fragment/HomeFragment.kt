@@ -11,6 +11,7 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dev.matyaqubov.instagramclone.R
+import dev.matyaqubov.instagramclone.activity.BaseActivity
 import dev.matyaqubov.instagramclone.adapter.HomeAdapter
 import dev.matyaqubov.instagramclone.model.Post
 import java.lang.RuntimeException

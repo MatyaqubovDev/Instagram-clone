@@ -6,6 +6,10 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import dev.matyaqubov.instagramclone.R
+import dev.matyaqubov.instagramclone.manager.AuthHandler
+import dev.matyaqubov.instagramclone.manager.AuthManager
+import dev.matyaqubov.instagramclone.model.User
+import dev.matyaqubov.instagramclone.utils.Extentions.toast
 
 /**
  * In SignUpActivity, user can signup using fullname , email,password
@@ -34,6 +38,39 @@ class SignUpActivity : BaseActivity() {
         btn_signup=findViewById(R.id.btn_signup)
 
         tv_signin.setOnClickListener { finish() }
-        btn_signup.setOnClickListener { finish() }
+        btn_signup.setOnClickListener {
+            val fullname=et_fullname.text.toString().trim()
+            val email=et_email.text.toString().trim()
+            val password=et_password.text.toString().trim()
+            if (email.isNotEmpty()&& password.isNotEmpty() && password==et_cpassword.text.toString().trim()){
+                val user=User(fullname,email,password,"")
+                firebaseSignUp(user)
+            }
+
+        }
+    }
+
+    private fun firebaseSignUp(user: User) {
+        showLoading(this)
+        AuthManager.singUp(user.email,user.password,object : AuthHandler{
+            override fun onSuccess(uid: String) {
+                user.uid=uid
+                storeUserDB(user)
+                toast(getString(R.string.str_signup_success))
+            }
+
+            override fun onError(exception: Exception?) {
+                dismissLoading()
+                toast(getString(R.string.str_signup_failed))
+            }
+
+        })
+
+    }
+
+    private fun storeUserDB(user: User) {
+        //saveDB
+        dismissLoading()
+        callMainActivity(context)
     }
 }

@@ -14,7 +14,9 @@ import com.sangcomz.fishbun.FishBun
 import com.sangcomz.fishbun.adapter.image.impl.GlideAdapter
 import dev.matyaqubov.instagramclone.R
 import dev.matyaqubov.instagramclone.adapter.ProfileAdapter
+import dev.matyaqubov.instagramclone.manager.AuthManager
 import dev.matyaqubov.instagramclone.model.Post
+import dev.matyaqubov.instagramclone.utils.Extentions.toast
 import dev.matyaqubov.instagramclone.utils.Logger
 
 /**
@@ -37,6 +39,10 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun initViews(view: View): View {
+        val iv_loguot=view.findViewById<ImageView>(R.id.iv_logout)
+        iv_loguot.setOnClickListener {
+            logout()
+        }
         recyclerView=view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager=GridLayoutManager(activity,2)
         val iv_profile=view.findViewById<ImageView>(R.id.iv_profile)
@@ -46,6 +52,11 @@ class ProfileFragment : BaseFragment() {
         refreshAdapter(loadPosts())
 
         return view
+    }
+
+    private fun logout() {
+        toast("logout")
+        AuthManager.signOut()
     }
 
     private fun refreshAdapter(items: ArrayList<Post>) {

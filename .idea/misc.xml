@@ -24,6 +24,7 @@
         <entry key="app/src/main/res/layout/activity_sign_in.xml" value="0.20416666666666666" />
         <entry key="app/src/main/res/layout/activity_sign_up.xml" value="0.20416666666666666" />
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.20416666666666666" />
+        <entry key="app/src/main/res/layout/custom_progress_dialog.xml" value="0.20416666666666666" />
         <entry key="app/src/main/res/layout/fragment_favourite.xml" value="0.20416666666666666" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.20416666666666666" />
         <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.20416666666666666" />

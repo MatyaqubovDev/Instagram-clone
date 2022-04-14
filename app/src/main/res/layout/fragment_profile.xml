@@ -31,7 +31,7 @@
                 android:textSize="17sp" />
 
             <ImageView
-                android:id="@+id/iv_camera"
+                android:id="@+id/iv_logout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="16dp"
