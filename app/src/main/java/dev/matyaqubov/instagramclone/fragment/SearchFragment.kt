@@ -6,11 +6,14 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.DatePicker
 import android.widget.EditText
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dev.matyaqubov.instagramclone.R
 import dev.matyaqubov.instagramclone.adapter.SearchAdapter
+import dev.matyaqubov.instagramclone.manager.DatabaseManager
+import dev.matyaqubov.instagramclone.manager.handler.DBUsersHandler
 import dev.matyaqubov.instagramclone.model.User
 
 /**
@@ -63,16 +66,19 @@ class SearchFragment : BaseFragment() {
 
     }
 
-    private fun loadUsers(): ArrayList<User> {
-        items = ArrayList()
-        items.add(User("Alisher", "uzroot@gmail.com"))
-        items.add(User("Azamat", "uzroot@gmail.com"))
-        items.add(User("Alijon", "uzroot@gmail.com"))
-        items.add(User("Aziz", "uzroot@gmail.com"))
-        items.add(User("Odilbek", "uzroot@gmail.com"))
-        items.add(User("Odiljon", "uzroot@gmail.com"))
+    private fun loadUsers() {
+        DatabaseManager.loadUsers(object : DBUsersHandler {
+            override fun onSuccess(users: ArrayList<User>) {
+                items.clear()
+                items.addAll(users)
+                refreshAdapter(items)
+            }
 
-        return items
+            override fun onError(e: Exception) {
+
+            }
+
+        })
     }
 
     private fun userByKeyword(keyword: String) {
@@ -80,7 +86,7 @@ class SearchFragment : BaseFragment() {
 
         users.clear()
         for (user in items) {
-            if (user.fullname.startsWith(keyword))
+            if (user.fullname.lowercase().startsWith(keyword.lowercase()))
                 users.add(user)
         }
         refreshAdapter(users)

@@ -8,6 +8,8 @@ import android.widget.TextView
 import dev.matyaqubov.instagramclone.R
 import dev.matyaqubov.instagramclone.manager.AuthHandler
 import dev.matyaqubov.instagramclone.manager.AuthManager
+import dev.matyaqubov.instagramclone.manager.DatabaseManager
+import dev.matyaqubov.instagramclone.manager.handler.DBUserHandler
 import dev.matyaqubov.instagramclone.model.User
 import dev.matyaqubov.instagramclone.utils.Extentions.toast
 
@@ -30,20 +32,22 @@ class SignUpActivity : BaseActivity() {
     }
 
     private fun initViews() {
-        et_fullname=findViewById(R.id.et_fullname)
-        et_email=findViewById(R.id.et_email)
-        et_password=findViewById(R.id.et_password)
-        et_cpassword=findViewById(R.id.et_cpassword)
-        tv_signin=findViewById(R.id.tv_signin)
-        btn_signup=findViewById(R.id.btn_signup)
+        et_fullname = findViewById(R.id.et_fullname)
+        et_email = findViewById(R.id.et_email)
+        et_password = findViewById(R.id.et_password)
+        et_cpassword = findViewById(R.id.et_cpassword)
+        tv_signin = findViewById(R.id.tv_signin)
+        btn_signup = findViewById(R.id.btn_signup)
 
         tv_signin.setOnClickListener { finish() }
         btn_signup.setOnClickListener {
-            val fullname=et_fullname.text.toString().trim()
-            val email=et_email.text.toString().trim()
-            val password=et_password.text.toString().trim()
-            if (email.isNotEmpty()&& password.isNotEmpty() && password==et_cpassword.text.toString().trim()){
-                val user=User(fullname,email,password,"")
+            val fullname = et_fullname.text.toString().trim()
+            val email = et_email.text.toString().trim()
+            val password = et_password.text.toString().trim()
+            if (email.isNotEmpty() && password.isNotEmpty() && password == et_cpassword.text.toString()
+                    .trim()
+            ) {
+                val user = User(fullname, email, password, "")
                 firebaseSignUp(user)
             }
 
@@ -52,9 +56,9 @@ class SignUpActivity : BaseActivity() {
 
     private fun firebaseSignUp(user: User) {
         showLoading(this)
-        AuthManager.singUp(user.email,user.password,object : AuthHandler{
+        AuthManager.singUp(user.email, user.password, object : AuthHandler {
             override fun onSuccess(uid: String) {
-                user.uid=uid
+                user.uid = uid
                 storeUserDB(user)
                 toast(getString(R.string.str_signup_success))
             }
@@ -69,8 +73,17 @@ class SignUpActivity : BaseActivity() {
     }
 
     private fun storeUserDB(user: User) {
-        //saveDB
-        dismissLoading()
-        callMainActivity(context)
+        DatabaseManager.storeUser(user, object : DBUserHandler {
+            override fun onSuccess(user: User?) {
+                dismissLoading()
+                callMainActivity(context)
+            }
+
+            override fun onError(e: Exception) {
+
+            }
+
+        })
+
     }
 }

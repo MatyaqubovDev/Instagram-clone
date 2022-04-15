@@ -9,7 +9,7 @@ import android.widget.Toast
 import dev.matyaqubov.instagramclone.model.ScreenSize
 
 object Utils {
-    fun fireToast(context: Context,msg:String){
+    fun toast(context: Context,msg:String){
         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
     }
 

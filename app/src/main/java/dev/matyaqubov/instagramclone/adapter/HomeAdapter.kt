@@ -11,23 +11,26 @@ import com.google.android.material.imageview.ShapeableImageView
 import dev.matyaqubov.instagramclone.R
 import dev.matyaqubov.instagramclone.fragment.HomeFragment
 import dev.matyaqubov.instagramclone.model.Post
-import org.w3c.dom.Text
 
-class HomeAdapter(var fragment:HomeFragment,var items:ArrayList<Post>):BaseAdapter() {
+class HomeAdapter(var fragment: HomeFragment, var items: ArrayList<Post>) : BaseAdapter() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val view=LayoutInflater.from(parent.context).inflate(R.layout.item_post_home,parent,false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.item_post_home, parent, false)
 
         return PostViewHolder(view)
     }
 
 
-
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val post=items[position]
-        if (holder is PostViewHolder){
+        val post = items[position]
+        if (holder is PostViewHolder) {
             holder.apply {
-                Glide.with(fragment).load(post.image).into(iv_post)
+                tv_fullname.text = post.fullname
+                tv_caption.text = post.caption
+                tv_time.text = post.currentDate
+                Glide.with(fragment).load(post.postImg).into(iv_post)
+                Glide.with(fragment).load(post.userImg).into(iv_profile)
             }
         }
     }
@@ -37,24 +40,24 @@ class HomeAdapter(var fragment:HomeFragment,var items:ArrayList<Post>):BaseAdapt
     }
 
     class PostViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var iv_profile:ShapeableImageView
-        var iv_post:ShapeableImageView
-        var tv_fullname:TextView
-        var tv_time:TextView
-        var tv_caption:TextView
-        var iv_more:ImageView
-        var iv_like:ImageView
-        var iv_share:ImageView
+        var iv_profile: ShapeableImageView
+        var iv_post: ShapeableImageView
+        var tv_fullname: TextView
+        var tv_time: TextView
+        var tv_caption: TextView
+        var iv_more: ImageView
+        var iv_like: ImageView
+        var iv_share: ImageView
 
         init {
-            iv_profile=view.findViewById(R.id.iv_profile)
-            iv_post=view.findViewById(R.id.iv_post)
-            tv_fullname=view.findViewById(R.id.tv_fullname)
-            tv_time=view.findViewById(R.id.tv_time)
-            tv_caption=view.findViewById(R.id.tv_caption)
-            iv_more=view.findViewById(R.id.iv_more)
-            iv_like=view.findViewById(R.id.iv_like)
-            iv_share=view.findViewById(R.id.iv_share)
+            iv_profile = view.findViewById(R.id.iv_profile)
+            iv_post = view.findViewById(R.id.iv_post)
+            tv_fullname = view.findViewById(R.id.tv_fullname)
+            tv_time = view.findViewById(R.id.tv_time)
+            tv_caption = view.findViewById(R.id.tv_caption)
+            iv_more = view.findViewById(R.id.iv_more)
+            iv_like = view.findViewById(R.id.iv_like)
+            iv_share = view.findViewById(R.id.iv_share)
         }
 
     }

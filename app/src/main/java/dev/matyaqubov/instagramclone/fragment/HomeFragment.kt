@@ -13,12 +13,16 @@ import androidx.recyclerview.widget.RecyclerView
 import dev.matyaqubov.instagramclone.R
 import dev.matyaqubov.instagramclone.activity.BaseActivity
 import dev.matyaqubov.instagramclone.adapter.HomeAdapter
+import dev.matyaqubov.instagramclone.manager.AuthManager
+import dev.matyaqubov.instagramclone.manager.DatabaseManager
+import dev.matyaqubov.instagramclone.manager.handler.DBPostsHandler
 import dev.matyaqubov.instagramclone.model.Post
 import java.lang.RuntimeException
 
 class HomeFragment : BaseFragment() {
     val TAG = javaClass.simpleName.toString()
     private lateinit var recyclerView: RecyclerView
+    lateinit var base: BaseActivity
     var listener: HomeListener? = null
 
     override fun onCreateView(
@@ -26,6 +30,7 @@ class HomeFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
+        base = requireActivity() as BaseActivity
         return initViews(inflater.inflate(R.layout.fragment_home, container, false))
     }
 
@@ -48,28 +53,33 @@ class HomeFragment : BaseFragment() {
     private fun initViews(view: View): View {
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = GridLayoutManager(activity, 1)
-        refreshAdapter(loadPosts())
         val iv_camera = view.findViewById<ImageView>(R.id.iv_camera)
         iv_camera.setOnClickListener {
             listener!!.scrollToUpload()
         }
+        loadMyFeeds()
         return view
+    }
+
+    private fun loadMyFeeds() {
+        base.showLoading(requireActivity())
+        val uid = AuthManager.currentUser()!!.uid
+        DatabaseManager.loadFeeds(uid, object : DBPostsHandler {
+            override fun onSuccess(posts: ArrayList<Post>) {
+                base.dismissLoading()
+                refreshAdapter(posts)
+            }
+
+            override fun onError(e: Exception) {
+                base.dismissLoading()
+            }
+
+        })
     }
 
     private fun refreshAdapter(items: ArrayList<Post>) {
         val adapter = HomeAdapter(this, items)
         recyclerView.adapter = adapter
-    }
-
-    private fun loadPosts(): ArrayList<Post> {
-        val items = ArrayList<Post>()
-        items.add(Post("https://images.unsplash.com/photo-1523345863760-5b7f3472d14f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80"))
-        items.add(Post("https://images.unsplash.com/photo-1624862300786-fcdbd20ba0c3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=886&q=80"))
-        items.add(Post("https://images.unsplash.com/photo-1520186994231-6ea0019d8d51?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=543&q=80"))
-        items.add(Post("https://images.unsplash.com/photo-1523345863760-5b7f3472d14f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80"))
-        items.add(Post("https://images.unsplash.com/photo-1624862300786-fcdbd20ba0c3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=886&q=80"))
-        items.add(Post("https://images.unsplash.com/photo-1520186994231-6ea0019d8d51?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=543&q=80"))
-        return items
     }
 
 

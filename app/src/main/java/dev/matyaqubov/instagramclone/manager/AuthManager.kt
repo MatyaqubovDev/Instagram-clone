@@ -13,7 +13,7 @@ class AuthManager {
             return currentUser() != null
         }
 
-        private fun currentUser():FirebaseUser?{
+        fun currentUser():FirebaseUser?{
             return firebaseAuth.currentUser
         }
 

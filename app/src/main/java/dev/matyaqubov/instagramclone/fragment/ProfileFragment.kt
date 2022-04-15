@@ -3,19 +3,31 @@ package dev.matyaqubov.instagramclone.fragment
 import android.app.Activity
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.sangcomz.fishbun.FishBun
 import com.sangcomz.fishbun.adapter.image.impl.GlideAdapter
 import dev.matyaqubov.instagramclone.R
+import dev.matyaqubov.instagramclone.activity.BaseActivity
 import dev.matyaqubov.instagramclone.adapter.ProfileAdapter
 import dev.matyaqubov.instagramclone.manager.AuthManager
+import dev.matyaqubov.instagramclone.manager.DatabaseManager
+import dev.matyaqubov.instagramclone.manager.StorageManager
+import dev.matyaqubov.instagramclone.manager.handler.DBPostsHandler
+import dev.matyaqubov.instagramclone.manager.handler.DBUserHandler
+import dev.matyaqubov.instagramclone.manager.handler.DBUsersHandler
+import dev.matyaqubov.instagramclone.manager.handler.StorageHandler
 import dev.matyaqubov.instagramclone.model.Post
+import dev.matyaqubov.instagramclone.model.User
 import dev.matyaqubov.instagramclone.utils.Extentions.toast
 import dev.matyaqubov.instagramclone.utils.Logger
 
@@ -24,10 +36,16 @@ import dev.matyaqubov.instagramclone.utils.Logger
  */
 class ProfileFragment : BaseFragment() {
     lateinit var recyclerView: RecyclerView
-    val TAG=javaClass.simpleName.toString()
+    lateinit var iv_profile: ImageView
+    lateinit var tv_fullname: TextView
+    lateinit var tv_posts: TextView
+    lateinit var tv_email: TextView
+    lateinit var base: BaseActivity
 
-    var pickedPhoto: Uri?=null
-    var allPhotos=ArrayList<Uri>()
+    val TAG = javaClass.simpleName.toString()
+
+    var pickedPhoto: Uri? = null
+    var allPhotos = ArrayList<Uri>()
 
 
     override fun onCreateView(
@@ -35,44 +53,81 @@ class ProfileFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
+        base = requireActivity() as BaseActivity
         return initViews(inflater.inflate(R.layout.fragment_profile, container, false))
     }
 
     private fun initViews(view: View): View {
-        val iv_loguot=view.findViewById<ImageView>(R.id.iv_logout)
+        val iv_loguot = view.findViewById<ImageView>(R.id.iv_logout)
         iv_loguot.setOnClickListener {
             logout()
         }
-        recyclerView=view.findViewById(R.id.recyclerView)
-        recyclerView.layoutManager=GridLayoutManager(activity,2)
-        val iv_profile=view.findViewById<ImageView>(R.id.iv_profile)
+        tv_email = view.findViewById(R.id.tv_email)
+        tv_posts = view.findViewById(R.id.tv_posts)
+        tv_fullname = view.findViewById(R.id.tv_fullname)
+        recyclerView = view.findViewById(R.id.recyclerView)
+        recyclerView.layoutManager = GridLayoutManager(activity, 2)
+        iv_profile = view.findViewById<ImageView>(R.id.iv_profile)
         iv_profile.setOnClickListener {
             pickFishBunPhoto()
         }
-        refreshAdapter(loadPosts())
+        loadUserInfo()
+        loadMyPosts()
 
         return view
+    }
+
+
+    private fun loadUserInfo() {
+        DatabaseManager.loadUser(AuthManager.currentUser()!!.uid, object : DBUserHandler {
+            override fun onSuccess(user: User?) {
+                if (user != null) {
+                    showUserInfo(user)
+                }
+            }
+
+            override fun onError(e: Exception) {
+
+            }
+
+        })
+    }
+
+    private fun showUserInfo(user: User) {
+        tv_fullname.text = user.fullname
+        tv_email.text = user.email
+        Glide.with(this).load(user.userImg)
+            .placeholder(R.drawable.ic_profile)
+            .error(R.drawable.ic_profile)
+            .into(iv_profile)
     }
 
     private fun logout() {
         toast("logout")
         AuthManager.signOut()
+        base.callSignInActivity(requireContext())
+
     }
 
     private fun refreshAdapter(items: ArrayList<Post>) {
-        var adapter= ProfileAdapter(this,items)
-        recyclerView.adapter=adapter
+        var adapter = ProfileAdapter(this, items)
+        recyclerView.adapter = adapter
     }
 
-    private fun loadPosts(): ArrayList<Post> {
-        val items = ArrayList<Post>()
-        items.add(Post("https://images.unsplash.com/photo-1523345863760-5b7f3472d14f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80"))
-        items.add(Post("https://images.unsplash.com/photo-1624862300786-fcdbd20ba0c3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=886&q=80"))
-        items.add(Post("https://images.unsplash.com/photo-1520186994231-6ea0019d8d51?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=543&q=80"))
-        items.add(Post("https://images.unsplash.com/photo-1523345863760-5b7f3472d14f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80"))
-        items.add(Post("https://images.unsplash.com/photo-1624862300786-fcdbd20ba0c3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=886&q=80"))
-        items.add(Post("https://images.unsplash.com/photo-1520186994231-6ea0019d8d51?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=543&q=80"))
-        return items
+    private fun loadMyPosts() {
+        val uid = AuthManager.currentUser()!!.uid
+        DatabaseManager.loadPosts(uid, object : DBPostsHandler {
+            override fun onSuccess(posts: ArrayList<Post>) {
+                tv_posts.text = posts.size.toString()
+
+                refreshAdapter(posts)
+            }
+
+            override fun onError(e: Exception) {
+
+            }
+
+        })
     }
 
     /**
@@ -94,14 +149,23 @@ class ProfileFragment : BaseFragment() {
                 allPhotos =
                     it.data?.getParcelableArrayListExtra(FishBun.INTENT_PATH) ?: arrayListOf()
                 pickedPhoto = allPhotos[0]
-                uploadPickedPhoto()
+                uploadUserPhoto()
             }
         }
 
-    private fun uploadPickedPhoto() {
-        if (pickedPhoto!=null){
-            Logger.d(TAG,pickedPhoto!!.path.toString())
-        }
+    private fun uploadUserPhoto() {
+        if (pickedPhoto == null) return
+        StorageManager.uploadUserPhoto(pickedPhoto!!, object : StorageHandler {
+            override fun onSuccess(imgUrl: String) {
+                DatabaseManager.updateUserImage(imgUrl)
+                iv_profile.setImageURI(pickedPhoto)
+            }
+
+            override fun onError(e: Exception) {
+                Log.d(TAG, "onError: ${e.localizedMessage}")
+            }
+
+        })
     }
 
 

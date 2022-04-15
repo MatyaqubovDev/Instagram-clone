@@ -41,7 +41,7 @@ open class BaseActivity :AppCompatActivity() {
         }
     }
 
-    protected fun dismissLoading() {
+    fun dismissLoading() {
         if (progressDialog != null && progressDialog!!.isShowing) {
             progressDialog!!.dismiss()
         }

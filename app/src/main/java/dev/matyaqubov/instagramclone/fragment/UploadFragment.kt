@@ -16,6 +16,15 @@ import com.bumptech.glide.util.Util
 import com.sangcomz.fishbun.FishBun
 import com.sangcomz.fishbun.adapter.image.impl.GlideAdapter
 import dev.matyaqubov.instagramclone.R
+import dev.matyaqubov.instagramclone.activity.BaseActivity
+import dev.matyaqubov.instagramclone.manager.AuthManager
+import dev.matyaqubov.instagramclone.manager.DatabaseManager
+import dev.matyaqubov.instagramclone.manager.StorageManager
+import dev.matyaqubov.instagramclone.manager.handler.DBPostHandler
+import dev.matyaqubov.instagramclone.manager.handler.DBUserHandler
+import dev.matyaqubov.instagramclone.manager.handler.StorageHandler
+import dev.matyaqubov.instagramclone.model.Post
+import dev.matyaqubov.instagramclone.model.User
 import dev.matyaqubov.instagramclone.utils.Logger
 import dev.matyaqubov.instagramclone.utils.Utils
 import java.lang.RuntimeException
@@ -28,6 +37,7 @@ class UploadFragment : BaseFragment() {
     val TAG = javaClass.simpleName.toString()
     lateinit var fl_photo: FrameLayout
     lateinit var iv_photo: ImageView
+    lateinit var base: BaseActivity
     lateinit var et_caption: EditText
     var pickedPhoto: Uri? = null
     var allPhotos = ArrayList<Uri>()
@@ -39,6 +49,7 @@ class UploadFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
+        base = requireActivity() as BaseActivity
         return initViews(inflater.inflate(R.layout.fragment_upload, container, false))
     }
 
@@ -48,12 +59,12 @@ class UploadFragment : BaseFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        listener=if (context is UploadListener) context
+        listener = if (context is UploadListener) context
         else throw RuntimeException("$context must implement UploadListener")
     }
 
     override fun onDetach() {
-        listener=null
+        listener = null
         super.onDetach()
     }
 
@@ -85,16 +96,72 @@ class UploadFragment : BaseFragment() {
 
     private fun uploadNewPost() {
 
-       listener!!.scrollToHome()
+        listener!!.scrollToHome()
         val caption = et_caption.text.toString().trim()
         if (caption.isNotEmpty() && pickedPhoto != null) {
-            Logger.d(TAG, caption)
-            Logger.v(TAG, pickedPhoto!!.path.toString())
-            resetAll()
+            uploadPostPhoto(caption, pickedPhoto!!)
         }
     }
 
+    private fun uploadPostPhoto(caption: String, pickedPhoto: Uri) {
+        base.showLoading(requireActivity())
+        StorageManager.uploadPostPhoto(pickedPhoto, object : StorageHandler {
+            override fun onSuccess(imgUrl: String) {
+                val post = Post(caption, imgUrl)
+                val uid = AuthManager.currentUser()!!.uid
+
+                DatabaseManager.loadUser(uid, object : DBUserHandler {
+                    override fun onSuccess(user: User?) {
+                        post.uid = uid
+                        post.fullname = user!!.fullname
+                        post.userImg = user!!.userImg
+                        storePostToDB(post)
+                    }
+
+                    override fun onError(e: Exception) {
+
+                    }
+
+                })
+            }
+
+            override fun onError(e: Exception) {
+
+            }
+
+        })
+    }
+
+    private fun storePostToDB(post: Post) {
+        DatabaseManager.storePost(post, object : DBPostHandler {
+            override fun onSuccess(post: Post) {
+                storeFeedToDB(post)
+            }
+
+            override fun onError(e: Exception) {
+                base.dismissLoading()
+            }
+
+        })
+    }
+
+    private fun storeFeedToDB(post: Post) {
+        DatabaseManager.storeFeeds(post, object : DBPostHandler {
+            override fun onSuccess(post: Post) {
+                base.dismissLoading()
+                resetAll()
+                listener!!.scrollToHome()
+            }
+
+            override fun onError(e: Exception) {
+                base.dismissLoading()
+            }
+
+        })
+    }
+
     private fun resetAll() {
+        allPhotos.clear()
         et_caption.text.clear()
         pickedPhoto = null
         fl_photo.visibility = View.GONE

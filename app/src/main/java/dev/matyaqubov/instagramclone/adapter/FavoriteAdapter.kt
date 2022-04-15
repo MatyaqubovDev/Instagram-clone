@@ -10,9 +10,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.imageview.ShapeableImageView
 import dev.matyaqubov.instagramclone.R
 import dev.matyaqubov.instagramclone.fragment.FavouriteFragment
-import dev.matyaqubov.instagramclone.fragment.HomeFragment
 import dev.matyaqubov.instagramclone.model.Post
-import org.w3c.dom.Text
 
 class FavoriteAdapter(var fragment: FavouriteFragment, var items: ArrayList<Post>) : BaseAdapter() {
 
@@ -27,7 +25,7 @@ class FavoriteAdapter(var fragment: FavouriteFragment, var items: ArrayList<Post
         val post = items[position]
         if (holder is PostViewHolder) {
             holder.apply {
-                Glide.with(fragment).load(post.image).into(iv_post)
+                Glide.with(fragment).load(post.postImg).into(iv_post)
             }
         }
     }
