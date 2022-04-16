@@ -95,8 +95,6 @@ class UploadFragment : BaseFragment() {
 
 
     private fun uploadNewPost() {
-
-        listener!!.scrollToHome()
         val caption = et_caption.text.toString().trim()
         if (caption.isNotEmpty() && pickedPhoto != null) {
             uploadPostPhoto(caption, pickedPhoto!!)
