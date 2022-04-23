@@ -1,6 +1,7 @@
 package dev.matyaqubov.instagramclone.fragment
 
 import android.os.Bundle
+import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -12,7 +13,10 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dev.matyaqubov.instagramclone.R
 import dev.matyaqubov.instagramclone.adapter.SearchAdapter
+import dev.matyaqubov.instagramclone.manager.AuthManager
 import dev.matyaqubov.instagramclone.manager.DatabaseManager
+import dev.matyaqubov.instagramclone.manager.handler.DBFollowHandler
+import dev.matyaqubov.instagramclone.manager.handler.DBUserHandler
 import dev.matyaqubov.instagramclone.manager.handler.DBUsersHandler
 import dev.matyaqubov.instagramclone.model.User
 
@@ -67,11 +71,21 @@ class SearchFragment : BaseFragment() {
     }
 
     private fun loadUsers() {
+        val uid = AuthManager.currentUser()!!.uid
         DatabaseManager.loadUsers(object : DBUsersHandler {
             override fun onSuccess(users: ArrayList<User>) {
-                items.clear()
-                items.addAll(users)
-                refreshAdapter(items)
+                DatabaseManager.loadFollowing(uid, object : DBUsersHandler {
+                    override fun onSuccess(following: ArrayList<User>) {
+                        items.clear()
+                        items.addAll(mergedUsers(uid, users, following))
+                        refreshAdapter(items)
+                    }
+
+                    override fun onError(e: Exception) {
+
+                    }
+                })
+
             }
 
             override fun onError(e: Exception) {
@@ -79,6 +93,27 @@ class SearchFragment : BaseFragment() {
             }
 
         })
+    }
+
+    private fun mergedUsers(
+        uid: String,
+        users: ArrayList<User>,
+        following: ArrayList<User>
+    ): ArrayList<User> {
+        var items = ArrayList<User>()
+
+        for (u in users) {
+            val user = u
+            for (f in following) {
+                if (u.uid == f.uid) {
+                    user.isFollowed = true
+                    break
+                }
+            }
+            if (uid != user.uid) items.add(user)
+        }
+
+        return items
     }
 
     private fun userByKeyword(keyword: String) {
@@ -92,5 +127,56 @@ class SearchFragment : BaseFragment() {
         refreshAdapter(users)
     }
 
+    fun followOrUnfollow(to: User) {
+        val uid = AuthManager.currentUser()!!.uid
+        if (!to.isFollowed) followUser(uid, to)
+        else unFollowUser(uid, to)
+    }
+
+    private fun followUser(uid: String, to: User) {
+        DatabaseManager.loadUser(uid, object : DBUserHandler {
+            override fun onSuccess(me: User?) {
+                DatabaseManager.followUser(me!!, to, object : DBFollowHandler {
+                    override fun onSuccess(isFollowed: Boolean) {
+                        to.isFollowed = true
+                        DatabaseManager.storePostToMyFeed(uid, to)
+                    }
+
+                    override fun onError(e: java.lang.Exception) {
+
+                    }
+
+                })
+            }
+
+            override fun onError(e: Exception) {
+
+            }
+
+        })
+    }
+
+    private fun unFollowUser(uid: String, to: User) {
+        DatabaseManager.loadUser(uid, object : DBUserHandler {
+            override fun onSuccess(me: User?) {
+                DatabaseManager.unFollowUser(me!!, to, object : DBFollowHandler {
+                    override fun onSuccess(isFollowed: Boolean) {
+                        to.isFollowed = false
+                        DatabaseManager.removePostsFromMyFeed(uid, to)
+                    }
+
+                    override fun onError(e: Exception) {
+
+                    }
+
+                })
+            }
+
+            override fun onError(e: Exception) {
+
+            }
+
+        })
+    }
 
 }

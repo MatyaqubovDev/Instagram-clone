@@ -10,6 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import dev.matyaqubov.instagramclone.R
 import dev.matyaqubov.instagramclone.adapter.FavoriteAdapter
 import dev.matyaqubov.instagramclone.adapter.HomeAdapter
+import dev.matyaqubov.instagramclone.manager.AuthManager
+import dev.matyaqubov.instagramclone.manager.DatabaseManager
+import dev.matyaqubov.instagramclone.manager.handler.DBPostsHandler
 import dev.matyaqubov.instagramclone.model.Post
 
 class FavouriteFragment : BaseFragment() {
@@ -27,8 +30,30 @@ class FavouriteFragment : BaseFragment() {
     private fun initViews(view: View): View {
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = GridLayoutManager(activity, 1)
-        refreshAdapter(loadPosts())
+
+        loadLikedFeeds()
         return view
+    }
+
+    fun likeOrUnLikePost(post: Post) {
+        val uid = AuthManager.currentUser()!!.uid
+        DatabaseManager.likeFeedPost(uid,post)
+
+        loadLikedFeeds()
+    }
+
+    private fun loadLikedFeeds() {
+        val uid = AuthManager.currentUser()!!.uid
+        DatabaseManager.loadLikedFeeds(uid, object : DBPostsHandler {
+            override fun onSuccess(posts: ArrayList<Post>) {
+                refreshAdapter(posts)
+            }
+
+            override fun onError(e: Exception) {
+
+            }
+
+        })
     }
 
     private fun refreshAdapter(items: ArrayList<Post>) {

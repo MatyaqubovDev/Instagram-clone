@@ -1,11 +1,14 @@
 package dev.matyaqubov.instagramclone.model
 
 class User {
-    var uid:String=""
-    var fullname:String=""
-    var email:String=""
-    var password=""
-    var userImg=""
+    var uid: String = ""
+    var fullname: String = ""
+    var email: String = ""
+    var password = ""
+    var userImg = ""
+
+
+    var isFollowed: Boolean = false
 
     constructor(fullname: String, email: String) {
         this.fullname = fullname

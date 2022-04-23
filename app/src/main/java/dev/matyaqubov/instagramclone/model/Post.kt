@@ -12,6 +12,7 @@ class Post {
     var uid: String = ""
     var fullname: String = ""
     var userImg: String = ""
+    var isLiked = false
 
     constructor(caption: String, postImg: String) {
         this.caption = caption

@@ -19,11 +19,14 @@
     <string name="str_following">Following</string>
     <string name="str_followers">Followers</string>
     <string name="str_post">Posts</string>
-
     <string name="str_signin_success">Signed in successfully</string>
     <string name="str_signin_failed">Sign in failed</string>
     <string name="str_signup_success">Signed up successfully</string>
     <string name="str_signup_failed">Sign up failed</string>
+
+    <string name="str_cancel">Cancel</string>
+    <string name="str_confirm">Confirm</string>
+    <string name="str_delete_post">Do you want to delete this post?</string>
 
 
 </resources>

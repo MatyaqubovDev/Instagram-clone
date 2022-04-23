@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide
 import com.google.android.material.imageview.ShapeableImageView
 import dev.matyaqubov.instagramclone.R
 import dev.matyaqubov.instagramclone.fragment.FavouriteFragment
+import dev.matyaqubov.instagramclone.manager.AuthManager
 import dev.matyaqubov.instagramclone.model.Post
 
 class FavoriteAdapter(var fragment: FavouriteFragment, var items: ArrayList<Post>) : BaseAdapter() {
@@ -25,7 +26,36 @@ class FavoriteAdapter(var fragment: FavouriteFragment, var items: ArrayList<Post
         val post = items[position]
         if (holder is PostViewHolder) {
             holder.apply {
+                tv_fullname.text = post.fullname
+                tv_caption.text = post.caption
+                tv_time.text = post.currentDate
                 Glide.with(fragment).load(post.postImg).into(iv_post)
+                Glide.with(fragment).load(post.userImg).into(iv_profile)
+                iv_like.setOnClickListener {
+                    if (post.isLiked) {
+                        post.isLiked = false
+                        iv_like.setImageResource(R.drawable.ic_unliked)
+                    } else {
+                        post.isLiked = true
+                        iv_like.setImageResource(R.drawable.ic_liked)
+                    }
+                    fragment.likeOrUnLikePost(post)
+                }
+                if (post.isLiked) {
+                    iv_like.setImageResource(R.drawable.ic_liked)
+                } else {
+                    iv_like.setImageResource(R.drawable.ic_unliked)
+                }
+
+                val uid = AuthManager.currentUser()!!.uid
+                if (uid == post.uid) {
+                    iv_more.visibility = View.VISIBLE
+                } else {
+                    iv_more.visibility = View.GONE
+                }
+                iv_more.setOnClickListener {
+//                    fragment.showDeleteDialog(post)
+                }
             }
         }
     }

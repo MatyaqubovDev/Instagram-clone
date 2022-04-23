@@ -39,6 +39,8 @@ class ProfileFragment : BaseFragment() {
     lateinit var iv_profile: ImageView
     lateinit var tv_fullname: TextView
     lateinit var tv_posts: TextView
+    lateinit var tv_followers: TextView
+    lateinit var tv_following: TextView
     lateinit var tv_email: TextView
     lateinit var base: BaseActivity
 
@@ -63,6 +65,8 @@ class ProfileFragment : BaseFragment() {
             logout()
         }
         tv_email = view.findViewById(R.id.tv_email)
+        tv_followers = view.findViewById(R.id.tv_followers)
+        tv_following = view.findViewById(R.id.tv_following)
         tv_posts = view.findViewById(R.id.tv_posts)
         tv_fullname = view.findViewById(R.id.tv_fullname)
         recyclerView = view.findViewById(R.id.recyclerView)
@@ -73,8 +77,38 @@ class ProfileFragment : BaseFragment() {
         }
         loadUserInfo()
         loadMyPosts()
+        loadMyFollowers()
+        loadMyFollowing()
 
         return view
+    }
+
+    private fun loadMyFollowing() {
+        val uid = AuthManager.currentUser()!!.uid
+        DatabaseManager.loadFollowing(uid, object : DBUsersHandler {
+            override fun onSuccess(users: ArrayList<User>) {
+                tv_following.text = users.size.toString()
+            }
+
+            override fun onError(e: Exception) {
+
+            }
+
+        })
+    }
+
+    private fun loadMyFollowers() {
+        val uid = AuthManager.currentUser()!!.uid
+        DatabaseManager.loadFollowers(uid, object : DBUsersHandler {
+            override fun onSuccess(users: ArrayList<User>) {
+                tv_followers.text = users.size.toString()
+            }
+
+            override fun onError(e: Exception) {
+
+            }
+
+        })
     }
 
 
