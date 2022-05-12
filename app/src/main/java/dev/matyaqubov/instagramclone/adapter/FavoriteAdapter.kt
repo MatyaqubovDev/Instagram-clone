@@ -27,6 +27,7 @@ class FavoriteAdapter(var fragment: FavouriteFragment, var items: ArrayList<Post
         if (holder is PostViewHolder) {
             holder.apply {
                 tv_fullname.text = post.fullname
+                tv_caption_fullname.text = post.fullname
                 tv_caption.text = post.caption
                 tv_time.text = post.currentDate
                 Glide.with(fragment).load(post.postImg).into(iv_post)
@@ -68,6 +69,7 @@ class FavoriteAdapter(var fragment: FavouriteFragment, var items: ArrayList<Post
         var iv_profile: ShapeableImageView
         var iv_post: ShapeableImageView
         var tv_fullname: TextView
+        var tv_caption_fullname: TextView
         var tv_time: TextView
         var tv_caption: TextView
         var iv_more: ImageView
@@ -78,6 +80,7 @@ class FavoriteAdapter(var fragment: FavouriteFragment, var items: ArrayList<Post
             iv_profile = view.findViewById(R.id.iv_profile)
             iv_post = view.findViewById(R.id.iv_post)
             tv_fullname = view.findViewById(R.id.tv_fullname)
+            tv_caption_fullname = view.findViewById(R.id.tv_caption_fullname)
             tv_time = view.findViewById(R.id.tv_time)
             tv_caption = view.findViewById(R.id.tv_caption)
             iv_more = view.findViewById(R.id.iv_more)

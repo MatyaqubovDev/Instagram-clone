@@ -1,5 +1,6 @@
 package dev.matyaqubov.instagramclone.manager
 
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import dev.matyaqubov.instagramclone.manager.handler.*
 import dev.matyaqubov.instagramclone.model.Post
@@ -28,9 +29,13 @@ object DatabaseManager {
                 val fullname = it.getString("fullname")
                 val email = it.getString("email")
                 val userImg = it.getString("userImg")
+                var device_tokens: ArrayList<String>? =
+                    it.get("device_tokens") as ArrayList<String>?
+                if (device_tokens == null) device_tokens = ArrayList()
 
-                val user = User(fullname!!, email!!, userImg!!)
+                val user = User(fullname!!, email!!, device_tokens)
                 user.uid = uid
+                user.userImg = userImg!!
                 handler.onSuccess(user)
             } else {
                 handler.onSuccess(null)
@@ -54,8 +59,13 @@ object DatabaseManager {
                     val fullname = document.getString("fullname")
                     val email = document.getString("email")
                     val userImg = document.getString("userImg")
-                    val user = User(fullname!!, email!!, userImg!!)
+                    var device_tokens: ArrayList<String>? =
+                        document.get("device_tokens") as ArrayList<String>?
+                    if (device_tokens == null) device_tokens = ArrayList()
+
+                    val user = User(fullname!!, email!!, device_tokens)
                     user.uid = uid!!
+                    user.userImg = userImg!!
                     users.add(user)
                 }
                 handler.onSuccess(users)
@@ -316,6 +326,15 @@ object DatabaseManager {
             }
         }.addOnFailureListener {
             handler.onError(it)
+        }
+    }
+
+    fun addMyDeviceToken(uid: String, deviceToken: String?, dbUserHandler: DBUserHandler) {
+        val reference = database.collection(USER_PATH).document(uid)
+        reference.update("device_tokens", FieldValue.arrayUnion(deviceToken)).addOnSuccessListener {
+            dbUserHandler.onSuccess(null)
+        }.addOnFailureListener {
+            dbUserHandler.onError(it)
         }
     }
 }

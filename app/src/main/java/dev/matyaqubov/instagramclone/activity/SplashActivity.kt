@@ -57,7 +57,7 @@ class SplashActivity : BaseActivity() {
             // Save it in locally to use later
             val token = task.result
             Logger.d(TAG, token.toString())
-//            PrefsManager(this).storeDeviceToken(token.toString())
+            PrefsManager(this).storeDeviceToken(token.toString())
         })
     }
 

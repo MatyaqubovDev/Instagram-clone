@@ -8,6 +8,10 @@ import android.widget.TextView
 import dev.matyaqubov.instagramclone.R
 import dev.matyaqubov.instagramclone.manager.AuthHandler
 import dev.matyaqubov.instagramclone.manager.AuthManager
+import dev.matyaqubov.instagramclone.manager.DatabaseManager
+import dev.matyaqubov.instagramclone.manager.PrefsManager
+import dev.matyaqubov.instagramclone.manager.handler.DBUserHandler
+import dev.matyaqubov.instagramclone.model.User
 import dev.matyaqubov.instagramclone.utils.Extentions.toast
 
 /**
@@ -44,12 +48,27 @@ class SignInActivity : BaseActivity() {
             override fun onSuccess(uid: String) {
                 dismissLoading()
                 toast(getString(R.string.str_signin_success))
-                callMainActivity(context)
+                storeDeviceTokenToUser()
             }
 
             override fun onError(exception: Exception?) {
                 dismissLoading()
                 toast(getString(R.string.str_signin_failed))
+            }
+
+        })
+    }
+
+    private fun storeDeviceTokenToUser() {
+        val deviceToken = PrefsManager(this).loadDeviceToken()
+        var uid = AuthManager.currentUser()!!.uid
+        DatabaseManager.addMyDeviceToken(uid, deviceToken, object : DBUserHandler {
+            override fun onSuccess(user: User?) {
+                callMainActivity(this@SignInActivity)
+            }
+
+            override fun onError(e: Exception) {
+                callMainActivity(this@SignInActivity)
             }
 
         })

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +19,15 @@ import dev.matyaqubov.instagramclone.manager.DatabaseManager
 import dev.matyaqubov.instagramclone.manager.handler.DBFollowHandler
 import dev.matyaqubov.instagramclone.manager.handler.DBUserHandler
 import dev.matyaqubov.instagramclone.manager.handler.DBUsersHandler
+import dev.matyaqubov.instagramclone.model.FirebaseRequest
+import dev.matyaqubov.instagramclone.model.FirebaseResponse
+import dev.matyaqubov.instagramclone.model.Notification
 import dev.matyaqubov.instagramclone.model.User
+import dev.matyaqubov.instagramclone.network.ApiClient
+import dev.matyaqubov.instagramclone.network.ApiService
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 /**
  * In SearchFragment , all registered users can be found by Searching keyword and followed
@@ -139,6 +148,9 @@ class SearchFragment : BaseFragment() {
                 DatabaseManager.followUser(me!!, to, object : DBFollowHandler {
                     override fun onSuccess(isFollowed: Boolean) {
                         to.isFollowed = true
+                        if (to.device_tokens.size != 0) {
+                            sendFollowNotification(to.device_tokens, me)
+                        }
                         DatabaseManager.storePostToMyFeed(uid, to)
                     }
 
@@ -162,6 +174,9 @@ class SearchFragment : BaseFragment() {
                 DatabaseManager.unFollowUser(me!!, to, object : DBFollowHandler {
                     override fun onSuccess(isFollowed: Boolean) {
                         to.isFollowed = false
+                        if (to.device_tokens.size != 0) {
+                            sendUnFollowNotification(to.device_tokens, me)
+                        }
                         DatabaseManager.removePostsFromMyFeed(uid, to)
                     }
 
@@ -177,6 +192,43 @@ class SearchFragment : BaseFragment() {
             }
 
         })
+    }
+
+    private fun sendFollowNotification(token: ArrayList<String>, user: User) {
+        var notification = Notification("${user.fullname} started following you", "Instagram clone")
+        ApiClient.apiService.sendNotification(FirebaseRequest(notification, token))
+            .enqueue(object : Callback<FirebaseResponse> {
+                override fun onResponse(
+                    call: Call<FirebaseResponse>,
+                    response: Response<FirebaseResponse>
+                ) {
+                    Log.d(TAG, "onResponse: ${response.body()}")
+                }
+
+                override fun onFailure(call: Call<FirebaseResponse>, t: Throwable) {
+                    Log.d(TAG, "onFailure: ${t.localizedMessage}")
+                }
+
+            })
+    }
+
+    private fun sendUnFollowNotification(token: ArrayList<String>, user: User) {
+        var notification =
+            Notification("${user.fullname} stopping following you", "Instagram clone")
+        ApiClient.apiService.sendNotification(FirebaseRequest(notification, token))
+            .enqueue(object : Callback<FirebaseResponse> {
+                override fun onResponse(
+                    call: Call<FirebaseResponse>,
+                    response: Response<FirebaseResponse>
+                ) {
+                    Log.d(TAG, "onResponse: ${response.body()}")
+                }
+
+                override fun onFailure(call: Call<FirebaseResponse>, t: Throwable) {
+                    Log.d(TAG, "onFailure: ${t.localizedMessage}")
+                }
+
+            })
     }
 
 }

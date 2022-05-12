@@ -7,6 +7,10 @@ class User {
     var password = ""
     var userImg = ""
 
+    var device_id = ""
+    var device_type = "A"
+    var device_tokens: ArrayList<String> = ArrayList()
+
 
     var isFollowed: Boolean = false
 
@@ -21,11 +25,18 @@ class User {
         this.userImg = image
     }
 
+
     constructor(fullname: String, email: String, password: String, image: String) {
         this.fullname = fullname
         this.email = email
         this.password = password
         this.userImg = image
+    }
+
+    constructor(fullname: String, email: String, device_tokens: ArrayList<String>) {
+        this.fullname = fullname
+        this.email = email
+        this.device_tokens = device_tokens
     }
 
 
