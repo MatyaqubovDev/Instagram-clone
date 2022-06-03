@@ -31,9 +31,9 @@ open class BaseFragment:Fragment() {
             progressDialog!!.setCanceledOnTouchOutside(false)
             progressDialog!!.getWindow()!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             progressDialog!!.setContentView(R.layout.custom_progress_dialog)
-            val iv_progress = progressDialog!!.findViewById<ImageView>(R.id.iv_progress)
-            val animationDrawable = iv_progress!!.getDrawable() as AnimationDrawable
-            animationDrawable.start()
+//            val iv_progress = progressDialog!!.findViewById<ImageView>(R.id.iv_progress)
+//            val animationDrawable = iv_progress!!.getDrawable() as AnimationDrawable
+//            animationDrawable.start()
             if (!activity.isFinishing) progressDialog!!.show()
         }
     }
